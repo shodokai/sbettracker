@@ -1,20 +1,26 @@
-import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.esm.min.js';
+const API = "https://sbet-worker.nealsalmen.workers.dev/api/holdings";
 
-const ALCHEMY_URL = 'https://eth-mainnet.g.alchemy.com/v2/gePM5wxRNuFitwByDRapV';
-const SHARPLINK_WALLET = '0xCd9e09B30d481cc33937CE33fEB3d94D434F5F75';
-
-const provider = new ethers.providers.JsonRpcProvider(ALCHEMY_URL);
-
-window.fetchBalance = async () => {
+async function fetchBalance() {
   try {
-    const balance = await provider.getBalance(SHARPLINK_WALLET);
-    const eth = ethers.utils.formatEther(balance);
-    document.getElementById('balance').innerText = `${eth} ETH`;
+    const res = await fetch(API);
+    const data = await res.json();
+
+    if (data.holdings) {
+      document.getElementById("balance").innerText =
+        `${Number(data.holdings).toLocaleString()} ETH`;
+    } else {
+      document.getElementById("balance").innerText = "No data available";
+    }
+
+    const dt = new Date(data.timestamp).toLocaleString();
+    document.getElementById("updated").innerText = `Last updated: ${dt}`;
   } catch (err) {
-    document.getElementById('balance').innerText = 'Error fetching balance';
+    document.getElementById("balance").innerText = "Error fetching data";
+    document.getElementById("updated").innerText = "";
     console.error(err);
   }
-};
+}
 
-// Fetch once on load
+// Auto-run on page load
 fetchBalance();
+
