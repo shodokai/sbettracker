@@ -1,31 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Sharplink ETH Tracker</title>
+  <meta charset="UTF-8" />
+  <title>Sharplink ETH Holdings</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin-top: 5rem;
+      padding-top: 4rem;
+      background: #f9f9f9;
     }
     .balance {
-      font-size: 2rem;
-      color: #4caf50;
+      font-size: 2.5rem;
+      color: #2b9348;
+    }
+    #updated {
+      margin-top: 0.5rem;
+      color: #555;
+      font-size: 0.9rem;
     }
     button {
+      margin-top: 2rem;
       padding: 10px 20px;
       font-size: 1rem;
-      margin-top: 20px;
+      background-color: #2b9348;
+      color: white;
+      border: none;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>Sharplink Gaming ETH Holdings</h1>
+  <h1>Sharplink Gaming ETH Treasury</h1>
   <div class="balance" id="balance">Loading...</div>
+  <div id="updated">Fetching latest data...</div>
   <button onclick="fetchBalance()">Refresh</button>
 
-  <script type="module" src="tracker.js"></script>
+  <script src="tracker.js"></script>
 </body>
 </html>
+
