@@ -1,8 +1,31 @@
-mkdir sbettracker
-cd sbettracker
-echo "Hello from SBET Tracker" > index.html
-git init
-git add .
-git commit -m "initial commit"
-git remote add origin https://github.com/YOUR_USERNAME/sbettracker.git
-git push -u origin master
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sharplink ETH Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 5rem;
+    }
+    .balance {
+      font-size: 2rem;
+      color: #4caf50;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sharplink Gaming ETH Holdings</h1>
+  <div class="balance" id="balance">Loading...</div>
+  <button onclick="fetchBalance()">Refresh</button>
+
+  <script type="module" src="tracker.js"></script>
+</body>
+</html>
