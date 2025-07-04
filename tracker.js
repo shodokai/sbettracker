@@ -1,25 +1,20 @@
-const API = "https://sbet-worker.nealsalmen.workers.dev/api/holdings";
-
 async function fetchBalance() {
   try {
-    const res = await fetch(API);
+    const res = await fetch("https://sbet-worker.nealsalmen.workers.dev/api/holdings");
     const data = await res.json();
 
-    if (data.holdings) {
-      document.getElementById("balance").innerText =
-        `${Number(data.holdings).toLocaleString()} ETH`;
+    if (data.holdings != null) {
+      document.getElementById("balance").innerText = `${data.holdings} ETH`;
+      const time = new Date(data.timestamp).toLocaleString();
+      document.getElementById("updated").innerText = `Last updated: ${time}`;
     } else {
-      document.getElementById("balance").innerText = "No data available";
+      document.getElementById("balance").innerText = "Error fetching data";
+      document.getElementById("updated").innerText = "";
     }
-
-    const dt = new Date(data.timestamp).toLocaleString();
-    document.getElementById("updated").innerText = `Last updated: ${dt}`;
   } catch (err) {
     document.getElementById("balance").innerText = "Error fetching data";
     document.getElementById("updated").innerText = "";
-    console.error(err);
   }
 }
 
-// Auto-run on page load
-fetchBalance();
+window.onload = fetchBalance;
