@@ -1,26 +1,49 @@
-const API = "https://sbet-worker.nealsalmen.workers.dev/api/holdings";
-
 async function fetchBalance() {
   try {
-    const res = await fetch(API);
+    const res = await fetch("https://sbet-worker.nealsalmen.workers.dev/api/holdings");
     const data = await res.json();
 
-    if (data.holdings) {
-      document.getElementById("balance").innerText =
-        `${Number(data.holdings).toLocaleString()} ETH`;
+    if (data && data.holdings) {
+      document.getElementById("balance").textContent = data.holdings + " ETH";
+      const updatedTime = new Date(data.timestamp).toLocaleString();
+      document.getElementById("updated").textContent = `Updated: ${updatedTime}`;
     } else {
-      document.getElementById("balance").innerText = "No data available";
+      document.getElementById("balance").textContent = "Error fetching data";
     }
-
-    const dt = new Date(data.timestamp).toLocaleString();
-    document.getElementById("updated").innerText = `Last updated: ${dt}`;
   } catch (err) {
-    document.getElementById("balance").innerText = "Error fetching data";
-    document.getElementById("updated").innerText = "";
-    console.error(err);
+    document.getElementById("balance").textContent = "Error fetching data";
   }
 }
 
-// Auto-run on page load
-fetchBalance();
+function showHoldings() {
+  document.getElementById("newsSection").style.display = "none";
+  document.getElementById("holdings").style.display = "block";
+}
 
+function showNews() {
+  document.getElementById("holdings").style.display = "none";
+  document.getElementById("newsSection").style.display = "block";
+  fetchNews();
+}
+
+async function fetchNews() {
+  try {
+    const res = await fetch("https://sbet-worker.nealsalmen.workers.dev/api/news");
+    const news = await res.json();
+
+    const list = document.getElementById("newsList");
+    list.innerHTML = "";
+
+    news.forEach(item => {
+      const li = document.createElement("li");
+      li.innerHTML = `<a href="${item.link}" target="_blank">${item.title}</a>`;
+      list.appendChild(li);
+    });
+  } catch (err) {
+    const list = document.getElementById("newsList");
+    list.innerHTML = "<li>Error loading news. Try again later.</li>";
+  }
+}
+
+// Initial load
+fetchBalance();
