@@ -36,6 +36,32 @@
   <div id="updated">Fetching latest data...</div>
   <button onclick="fetchBalance()">Refresh</button>
 
-  <script src="tracker.js"></script>
+  <script>
+    const apiUrl = 'https://sbet-worker.nealsalmen.workers.dev/api/holdings';
+
+    async function fetchBalance() {
+      document.getElementById('updated').innerText = 'Fetching latest data...';
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        if (data.holdings) {
+          const ethAmount = (data.holdings / 1e6).toFixed(2);
+          const timestamp = new Date(data.timestamp).toLocaleString();
+
+          document.getElementById('balance').innerText = `${ethAmount} ETH`;
+          document.getElementById('updated').innerText = `Last updated: ${timestamp}`;
+        } else {
+          throw new Error('Invalid data format');
+        }
+      } catch (err) {
+        document.getElementById('balance').innerText = 'Error fetching data';
+        document.getElementById('updated').innerText = err.message;
+      }
+    }
+
+    fetchBalance();
+  </script>
 </body>
 </html>
