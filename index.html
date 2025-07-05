@@ -47,7 +47,7 @@
   <div id="sourceLink"><a id="sourceUrl" href="#" target="_blank">View Sharplink PR</a></div>
   <button onclick="fetchBalance()">Refresh</button>
 
-  <script>
+ <script>
   const holdingsUrl = 'data.json';
   const ethPriceUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
 
@@ -55,16 +55,13 @@
     document.getElementById('updated').innerText = 'Fetching latest data...';
 
     try {
-      // Load ETH holdings from your repo
       const holdingsRes = await fetch(holdingsUrl);
       const { eth, updated_at, source } = await holdingsRes.json();
 
-      // Load current ETH price from CoinGecko
       const priceRes = await fetch(ethPriceUrl);
       const priceData = await priceRes.json();
       const ethPrice = priceData.ethereum.usd;
 
-      // Format values
       const ethFormatted = Number(eth).toLocaleString();
       const timestamp = new Date(updated_at).toLocaleString();
       const totalUsdValue = (eth * ethPrice).toFixed(0);
@@ -73,13 +70,14 @@
       // Update the DOM
       document.getElementById('balance').innerText = `${ethFormatted} ETH`;
       document.getElementById('usdValue').innerText = totalFormatted;
+      document.getElementById('ethPrice').innerText = `ETH Price: $${ethPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       document.getElementById('updated').innerText = `Last updated: ${timestamp}`;
       document.getElementById('sourceUrl').href = source;
       document.getElementById('sourceUrl').textContent = "View Sharplink PR";
-
     } catch (err) {
       document.getElementById('balance').innerText = 'Error fetching data';
       document.getElementById('usdValue').innerText = '';
+      document.getElementById('ethPrice').innerText = '';
       document.getElementById('updated').innerText = err.message;
       document.getElementById('sourceLink').style.display = 'none';
     }
@@ -87,6 +85,7 @@
 
   fetchBalance();
 </script>
+
 
 </body>
 </html>
