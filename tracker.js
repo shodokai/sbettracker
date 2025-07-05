@@ -1,20 +1,23 @@
 async function fetchBalance() {
+  const res = await fetch('https://sbet-worker.nealsalmen.workers.dev/api/holdings');
+  let data;
   try {
-    const res = await fetch("https://sbet-worker.nealsalmen.workers.dev/api/holdings");
-    const data = await res.json();
-
-    if (data.holdings != null) {
-      document.getElementById("balance").innerText = `${data.holdings} ETH`;
-      const time = new Date(data.timestamp).toLocaleString();
-      document.getElementById("updated").innerText = `Last updated: ${time}`;
-    } else {
-      document.getElementById("balance").innerText = "Error fetching data";
-      document.getElementById("updated").innerText = "";
-    }
+    data = await res.json();
   } catch (err) {
-    document.getElementById("balance").innerText = "Error fetching data";
-    document.getElementById("updated").innerText = "";
+    document.getElementById('balance').textContent = 'Error parsing data';
+    return;
+  }
+
+  if (data.holdings != null) {
+    document.getElementById('balance').textContent = data.holdings.toLocaleString();
+    const date = new Date(data.timestamp);
+    document.getElementById('updated').textContent = `Updated: ${date.toLocaleString()}`;
+  } else {
+    document.getElementById('balance').textContent = 'No data';
+    document.getElementById('updated').textContent = '';
   }
 }
 
-window.onload = fetchBalance;
+// Initial call:
+fetchBalance();
+
