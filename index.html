@@ -41,41 +41,52 @@
 <body>
   <h1>Sharplink Gaming ETH Treasury</h1>
   <div class="balance" id="balance">Loading...</div>
+  <div class="balance" id="usdValue" style="font-size: 1.8rem; color: #000;"></div>
   <div id="updated">Fetching latest data...</div>
   <div id="sourceLink"><a id="sourceUrl" href="#" target="_blank">View Sharplink PR</a></div>
   <button onclick="fetchBalance()">Refresh</button>
 
   <script>
-    const apiUrl = 'data.json';
+  const holdingsUrl = 'data.json';
+  const ethPriceUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
 
-    async function fetchBalance() {
-      document.getElementById('updated').innerText = 'Fetching latest data...';
+  async function fetchBalance() {
+    document.getElementById('updated').innerText = 'Fetching latest data...';
 
-      try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
+    try {
+      // Load ETH holdings from your repo
+      const holdingsRes = await fetch(holdingsUrl);
+      const { eth, updated_at, source } = await holdingsRes.json();
 
-        if (data.eth) {
-          const ethAmount = Number(data.eth).toLocaleString();
-          const timestamp = new Date(data.updated_at).toLocaleString();
-          const source = data.source;
+      // Load current ETH price from CoinGecko
+      const priceRes = await fetch(ethPriceUrl);
+      const priceData = await priceRes.json();
+      const ethPrice = priceData.ethereum.usd;
 
-          document.getElementById('balance').innerText = `${ethAmount} ETH`;
-          document.getElementById('updated').innerText = `Last updated: ${timestamp}`;
-          document.getElementById('sourceUrl').href = source;
-          document.getElementById('sourceUrl').textContent = "View Sharplink PR";
-        } else {
-          throw new Error('Invalid data format');
-        }
-      } catch (err) {
-        document.getElementById('balance').innerText = 'Error fetching data';
-        document.getElementById('updated').innerText = err.message;
-        document.getElementById('sourceLink').style.display = 'none';
-      }
+      // Format values
+      const ethFormatted = Number(eth).toLocaleString();
+      const timestamp = new Date(updated_at).toLocaleString();
+      const totalUsdValue = (eth * ethPrice).toFixed(0);
+      const totalFormatted = `$${Number(totalUsdValue).toLocaleString()}`;
+
+      // Update the DOM
+      document.getElementById('balance').innerText = `${ethFormatted} ETH`;
+      document.getElementById('usdValue').innerText = totalFormatted;
+      document.getElementById('updated').innerText = `Last updated: ${timestamp}`;
+      document.getElementById('sourceUrl').href = source;
+      document.getElementById('sourceUrl').textContent = "View Sharplink PR";
+
+    } catch (err) {
+      document.getElementById('balance').innerText = 'Error fetching data';
+      document.getElementById('usdValue').innerText = '';
+      document.getElementById('updated').innerText = err.message;
+      document.getElementById('sourceLink').style.display = 'none';
     }
+  }
 
-    fetchBalance();
-  </script>
+  fetchBalance();
+</script>
+
 </body>
 </html>
 
