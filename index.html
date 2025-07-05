@@ -27,6 +27,13 @@
       text-decoration: none;
       font-size: 0.9rem;
     }
+    #sharesInput {
+      margin-left: 8px;
+      font-size: 1rem;
+      padding: 4px;
+      width: 140px;
+      text-align: right;
+    }
     button {
       margin-top: 2rem;
       padding: 10px 20px;
@@ -52,7 +59,10 @@
   <div id="stockData">
     <h2>$SBET Valuation</h2>
     <div id="sbetPrice"></div>
-    <div id="sharesOutstanding"></div>
+    <div id="sharesOutstanding">
+      Shares Outstanding: <span id="sharesDisplay">80,000,000</span>
+      <input type="number" id="sharesInput" placeholder="Enter shares" />
+    </div>
     <div id="marketCap"></div>
     <div id="ethNAV"></div>
   </div>
@@ -63,19 +73,13 @@
     const holdingsUrl = 'data.json';
     const ethPriceUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
     const finnhubKey = 'd1klkf9r01qt8fop6p80d1klkf9r01qt8fop6p8g';
+    const defaultShares = 80_000_000;
 
     async function getSBETPrice() {
       const url = `https://finnhub.io/api/v1/quote?symbol=SBET&token=${finnhubKey}`;
       const res = await fetch(url);
       const data = await res.json();
       return data.c;
-    }
-
-    async function getSBETSharesOutstanding() {
-      const url = `https://finnhub.io/api/v1/stock/profile2?symbol=SBET&token=${finnhubKey}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      return Math.round(data.shareOutstanding * 1_000_000); // millions → full number
     }
 
     async function fetchBalance() {
@@ -89,17 +93,24 @@
         const ethData = await ethRes.json();
         const ethPrice = ethData.ethereum.usd;
 
-        const [sbetPrice, sbetShares] = await Promise.all([
-          getSBETPrice(),
-          getSBETSharesOutstanding()
-        ]);
+        const sbetPrice = await getSBETPrice();
+
+        // Get user input or fallback to default
+        let userInput = document.getElementById('sharesInput').value;
+        let sbetShares = parseInt(userInput.replace(/,/g, ''), 10);
+        if (isNaN(sbetShares) || sbetShares <= 0) {
+          sbetShares = defaultShares;
+        }
+
+        // Update shares display
+        document.getElementById('sharesDisplay').innerText = sbetShares.toLocaleString();
 
         const ethFormatted = Number(eth).toLocaleString();
         const ethValue = eth * ethPrice;
         const timestamp = new Date(updated_at).toLocaleString();
         const totalFormatted = `$${Number(ethValue).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 
-        // Update ETH Treasury Display
+        // ETH Display
         document.getElementById('balance').innerText = `${ethFormatted} ETH`;
         document.getElementById('usdValue').innerText = totalFormatted;
         document.getElementById('ethPrice').innerText = `ETH Price: $${ethPrice.toFixed(2)}`;
@@ -112,7 +123,6 @@
         const navRatio = marketCap / ethValue;
 
         document.getElementById('sbetPrice').innerText = `Stock Price: $${sbetPrice.toFixed(4)}`;
-        document.getElementById('sharesOutstanding').innerText = `Shares Outstanding: ${sbetShares.toLocaleString()}`;
         document.getElementById('marketCap').innerText = `Market Cap: $${marketCap.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
         document.getElementById('ethNAV').innerText = `NAV per $1 of ETH Held: $${navRatio.toFixed(4)}`;
 
