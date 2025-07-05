@@ -14,10 +14,10 @@
       font-size: 2.5rem;
       color: #2b9348;
     }
-    #updated {
-      margin-top: 0.5rem;
-      color: #555;
-      font-size: 0.9rem;
+    #usdValue, #ethPrice, #updated, #sbetPrice, #sharesOutstanding, #marketCap, #ethNAV {
+      font-size: 1.1rem;
+      margin-top: 0.3rem;
+      color: #333;
     }
     #sourceLink {
       margin-top: 0.5rem;
@@ -36,57 +36,79 @@
       border: none;
       cursor: pointer;
     }
+    #stockData {
+      margin-top: 3rem;
+    }
   </style>
 </head>
 <body>
   <h1>Sharplink Gaming ETH Treasury</h1>
   <div class="balance" id="balance">Loading...</div>
   <div class="balance" id="usdValue" style="font-size: 1.8rem; color: #000;"></div>
-  <div id="ethPrice" style="margin-top: 0.3rem; font-size: 1rem; color: #333;"></div>
+  <div id="ethPrice"></div>
   <div id="updated">Fetching latest data...</div>
   <div id="sourceLink"><a id="sourceUrl" href="#" target="_blank">View Sharplink PR</a></div>
+
+  <div id="stockData">
+    <h2>$SBET Valuation</h2>
+    <div id="sbetPrice"></div>
+    <div id="sharesOutstanding"></div>
+    <div id="marketCap"></div>
+    <div id="ethNAV"></div>
+  </div>
+
   <button onclick="fetchBalance()">Refresh</button>
 
- <script>
-  const holdingsUrl = 'data.json';
-  const ethPriceUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
+  <script>
+    const holdingsUrl = 'data.json';
+    const ethPriceUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
+    const sbetPrice = 0.18; // Live price can be added later
+    const sbetShares = 212000000; // Replace with API or dynamic source if needed
 
-  async function fetchBalance() {
-    document.getElementById('updated').innerText = 'Fetching latest data...';
+    async function fetchBalance() {
+      document.getElementById('updated').innerText = 'Fetching latest data...';
 
-    try {
-      const holdingsRes = await fetch(holdingsUrl);
-      const { eth, updated_at, source } = await holdingsRes.json();
+      try {
+        const holdingsRes = await fetch(holdingsUrl);
+        const { eth, updated_at, source } = await holdingsRes.json();
 
-      const priceRes = await fetch(ethPriceUrl);
-      const priceData = await priceRes.json();
-      const ethPrice = priceData.ethereum.usd;
+        const priceRes = await fetch(ethPriceUrl);
+        const priceData = await priceRes.json();
+        const ethPrice = priceData.ethereum.usd;
 
-      const ethFormatted = Number(eth).toLocaleString();
-      const timestamp = new Date(updated_at).toLocaleString();
-      const totalUsdValue = (eth * ethPrice).toFixed(0);
-      const totalFormatted = `$${Number(totalUsdValue).toLocaleString()}`;
+        const ethFormatted = Number(eth).toLocaleString();
+        const ethValue = eth * ethPrice;
+        const timestamp = new Date(updated_at).toLocaleString();
+        const totalFormatted = `$${Number(ethValue).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 
-      // Update the DOM
-      document.getElementById('balance').innerText = `${ethFormatted} ETH`;
-      document.getElementById('usdValue').innerText = totalFormatted;
-      document.getElementById('ethPrice').innerText = `ETH Price: $${ethPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-      document.getElementById('updated').innerText = `Last updated: ${timestamp}`;
-      document.getElementById('sourceUrl').href = source;
-      document.getElementById('sourceUrl').textContent = "View Sharplink PR";
-    } catch (err) {
-      document.getElementById('balance').innerText = 'Error fetching data';
-      document.getElementById('usdValue').innerText = '';
-      document.getElementById('ethPrice').innerText = '';
-      document.getElementById('updated').innerText = err.message;
-      document.getElementById('sourceLink').style.display = 'none';
+        // Update ETH treasury info
+        document.getElementById('balance').innerText = `${ethFormatted} ETH`;
+        document.getElementById('usdValue').innerText = totalFormatted;
+        document.getElementById('ethPrice').innerText = `ETH Price: $${ethPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        document.getElementById('updated').innerText = `Last updated: ${timestamp}`;
+        document.getElementById('sourceUrl').href = source;
+        document.getElementById('sourceUrl').textContent = "View Sharplink PR";
+
+        // SBET NAV calculations
+        const marketCap = sbetPrice * sbetShares;
+        const navRatio = marketCap / ethValue;
+
+        document.getElementById('sbetPrice').innerText = `Stock Price: $${sbetPrice.toFixed(4)}`;
+        document.getElementById('sharesOutstanding').innerText = `Shares Outstanding: ${sbetShares.toLocaleString()}`;
+        document.getElementById('marketCap').innerText = `Market Cap: $${marketCap.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+        document.getElementById('ethNAV').innerText = `NAV per $1 of ETH Held: $${navRatio.toFixed(4)}`;
+
+      } catch (err) {
+        document.getElementById('balance').innerText = 'Error fetching data';
+        document.getElementById('usdValue').innerText = '';
+        document.getElementById('ethPrice').innerText = '';
+        document.getElementById('updated').innerText = err.message;
+        document.getElementById('sourceLink').style.display = 'none';
+        document.getElementById('stockData').style.display = 'none';
+      }
     }
-  }
 
-  fetchBalance();
-</script>
-
-
+    fetchBalance();
+  </script>
 </body>
 </html>
-
