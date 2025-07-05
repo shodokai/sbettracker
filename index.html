@@ -52,4 +52,72 @@
   <div id="stockData">
     <h2>$SBET Valuation</h2>
     <div id="sbetPrice"></div>
-    <di
+    <div id="sharesOutstanding"></div>
+    <div id="marketCap"></div>
+    <div id="ethNAV"></div>
+  </div>
+
+  <button onclick="fetchBalance()">Refresh</button>
+
+  <script>
+    const holdingsUrl = 'data.json';
+    const ethPriceUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
+    const finnhubKey = 'd1klkf9r01qt8fop6p80d1klkf9r01qt8fop6p8g';
+    const sbetShares = 212000000;
+
+    async function getSBETPrice() {
+      const url = `https://finnhub.io/api/v1/quote?symbol=SBET&token=${finnhubKey}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return data.c; // 'c' = current price
+    }
+
+    async function fetchBalance() {
+      document.getElementById('updated').innerText = 'Fetching latest data...';
+
+      try {
+        const holdingsRes = await fetch(holdingsUrl);
+        const { eth, updated_at, source } = await holdingsRes.json();
+
+        const ethRes = await fetch(ethPriceUrl);
+        const ethData = await ethRes.json();
+        const ethPrice = ethData.ethereum.usd;
+
+        const sbetPrice = await getSBETPrice();
+
+        const ethFormatted = Number(eth).toLocaleString();
+        const ethValue = eth * ethPrice;
+        const timestamp = new Date(updated_at).toLocaleString();
+        const totalFormatted = `$${Number(ethValue).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+
+        // Update ETH display
+        document.getElementById('balance').innerText = `${ethFormatted} ETH`;
+        document.getElementById('usdValue').innerText = totalFormatted;
+        document.getElementById('ethPrice').innerText = `ETH Price: $${ethPrice.toFixed(2)}`;
+        document.getElementById('updated').innerText = `Last updated: ${timestamp}`;
+        document.getElementById('sourceUrl').href = source;
+        document.getElementById('sourceUrl').textContent = "View Sharplink PR";
+
+        // Calculate SBET valuation
+        const marketCap = sbetPrice * sbetShares;
+        const navRatio = marketCap / ethValue;
+
+        document.getElementById('sbetPrice').innerText = `Stock Price: $${sbetPrice.toFixed(4)}`;
+        document.getElementById('sharesOutstanding').innerText = `Shares Outstanding: ${sbetShares.toLocaleString()}`;
+        document.getElementById('marketCap').innerText = `Market Cap: $${marketCap.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+        document.getElementById('ethNAV').innerText = `NAV per $1 of ETH Held: $${navRatio.toFixed(4)}`;
+
+      } catch (err) {
+        document.getElementById('balance').innerText = 'Error fetching data';
+        document.getElementById('usdValue').innerText = '';
+        document.getElementById('ethPrice').innerText = '';
+        document.getElementById('updated').innerText = err.message;
+        document.getElementById('sourceLink').style.display = 'none';
+        document.getElementById('stockData').style.display = 'none';
+      }
+    }
+
+    fetchBalance();
+  </script>
+</body>
+</html>
