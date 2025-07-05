@@ -6,12 +6,17 @@ URL = "https://investors.sharplink.com/sharplink-gaming-to-ring-nasdaq-closing-b
 DATA_FILE = "data.json"
 
 def extract_large_eth_number(text, threshold=150000):
-    # Find all numbers with commas and decimals
+    # Find all number-like strings (with commas and optional decimals)
     matches = re.findall(r'[\d,]+(?:\.\d+)?', text)
     for num in matches:
-        value = float(num.replace(',', ''))
-        if value > threshold:
-            return value
+        try:
+            clean = num.replace(',', '').strip()
+            if clean:  # skip empty strings
+                value = float(clean)
+                if value > threshold:
+                    return value
+        except ValueError:
+            continue
     return None
 
 def main():
