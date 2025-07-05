@@ -2,42 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sharplink Gaming Ethereum Holdings Tracker | SBET NAV Monitor</title>
-  <meta name="description" content="Live tracker of Sharplink Gaming's Ethereum treasury holdings and real-time $SBET valuation based on ETH NAV.">
-  <meta name="robots" content="index, follow">
-  <meta property="og:title" content="Sharplink Gaming Ethereum Holdings">
-  <meta property="og:description" content="Track Sharplink's ETH holdings and SBET valuation in real-time.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.sbettracker.com">
-  <meta property="og:image" content="https://www.sbettracker.com/assets/preview.png"> <!-- Optional if you have one -->
-
+  <title>Sharplink Gaming ETH Tracker</title>
+  <link rel="icon" href="data:,"> <!-- Prevent 404 on favicon -->
+  <meta name="description" content="Track Sharplink Gaming's Ethereum (ETH) treasury in real-time. Live ETH valuation, SBET stock NAV, and market cap comparison.">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      padding-top: 4rem;
+      padding-top: 2rem;
       background: #f9f9f9;
-      margin: 0;
+      color: #222;
     }
-    h1 {
-      font-size: 2.2rem;
-      margin-bottom: 0.5rem;
-    }
-    .intro {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 0 1rem 2rem;
-      font-size: 1rem;
-      color: #333;
-    }
+    h1 { font-size: 2rem; margin-bottom: 0.3rem; }
+    h2 { margin-top: 3rem; }
     .balance {
-      font-size: 2.5rem;
+      font-size: 2.3rem;
       color: #2b9348;
+      margin: 1rem 0;
     }
     #usdValue, #ethPrice, #updated, #sbetPrice, #sharesOutstanding, #marketCap, #ethNAV {
       font-size: 1.1rem;
-      margin-top: 0.3rem;
+      margin-top: 0.4rem;
       color: #333;
     }
     #sourceLink {
@@ -67,18 +53,104 @@
     #stockData {
       margin-top: 3rem;
     }
+    #intro {
+      max-width: 700px;
+      margin: 0 auto 2rem auto;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body>
   <h1>Sharplink Gaming ETH Treasury Tracker</h1>
+  <div id="intro">
+    <strong>Sharplink Gaming Inc. ($SBET)</strong> has adopted a forward-looking digital asset strategy by holding a portion of its treasury in Ethereum (ETH). This tracker provides real-time updates of Sharplink's ETH holdings, their USD value, and how that value compares to the company’s market capitalization. It's designed to help investors better understand how Sharplink’s Ethereum treasury affects the intrinsic value of its stock.
 
-  <div class="intro">
-    <p><strong>Sharplink Gaming Inc. ($SBET)</strong> has adopted a forward-looking digital asset strategy by holding a portion of its treasury in Ethereum (ETH). This tracker provides real-time updates of Sharplink's ETH holdings, their USD value, and how that value compares to the company’s market capitalization. It's designed to help investors better understand how Sharplink’s Ethereum treasury affects the intrinsic value of its stock.</p>
-    <p>The ETH holdings are based on company press releases and public disclosures. Live ETH pricing is fetched via CoinGecko, while SBET pricing is provided by Finnhub. This is not financial advice. Always do your own due diligence.</p>
+    <br /><br />
+    The ETH holdings are based on company press releases and public disclosures. Live ETH pricing is fetched via CoinGecko, while SBET pricing is provided by Finnhub. This is not financial advice. Always do your own due diligence.
   </div>
 
   <div class="balance" id="balance">Loading...</div>
   <div class="balance" id="usdValue" style="font-size: 1.8rem; color: #000;"></div>
   <div id="ethPrice"></div>
   <div id="updated">Fetching latest data...</div>
-  <div id="sourceLink"><a id="sourceUr
+  <div id="sourceLink"><a id="sourceUrl" href="#" target="_blank">View Sharplink PR</a></div>
+
+  <div id="stockData">
+    <h2>$SBET Valuation</h2>
+    <div id="sbetPrice"></div>
+    <div id="sharesOutstanding">
+      Shares Outstanding: <span id="sharesDisplay">80,000,000</span>
+      <input type="number" id="sharesInput" placeholder="Enter shares" />
+    </div>
+    <div id="marketCap"></div>
+    <div id="ethNAV"></div>
+  </div>
+
+  <button onclick="fetchBalance()">Refresh</button>
+
+  <script>
+    const holdingsUrl = 'data.json';
+    const ethPriceUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
+    const finnhubKey = 'd1klkf9r01qt8fop6p80d1klkf9r01qt8fop6p8g';
+    const defaultShares = 80000000;
+
+    async function getSBETPrice() {
+      const url = `https://finnhub.io/api/v1/quote?symbol=SBET&token=${finnhubKey}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return data.c;
+    }
+
+    async function fetchBalance() {
+      document.getElementById('updated').innerText = 'Fetching latest data...';
+      try {
+        const holdingsRes = await fetch(holdingsUrl);
+        const holdings = await holdingsRes.json();
+        console.log("Holdings fetched:", holdings);
+
+        const { eth, updated_at, source } = holdings;
+
+        const ethRes = await fetch(ethPriceUrl);
+        const ethData = await ethRes.json();
+        const ethPrice = ethData.ethereum.usd;
+
+        const sbetPrice = await getSBETPrice();
+
+        let userInput = document.getElementById('sharesInput').value;
+        let sbetShares = parseInt(userInput.replace(/,/g, ''), 10);
+        if (isNaN(sbetShares) || sbetShares <= 0) {
+          sbetShares = defaultShares;
+        }
+
+        document.getElementById('sharesDisplay').innerText = sbetShares.toLocaleString();
+
+        const ethValue = eth * ethPrice;
+        const timestamp = new Date(updated_at).toLocaleString();
+
+        document.getElementById('balance').innerText = `${Number(eth).toLocaleString()} ETH`;
+        document.getElementById('usdValue').innerText = `$${ethValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+        document.getElementById('ethPrice').innerText = `ETH Price: $${ethPrice.toFixed(2)}`;
+        document.getElementById('updated').innerText = `Last updated: ${timestamp}`;
+        document.getElementById('sourceUrl').href = source;
+
+        const marketCap = sbetPrice * sbetShares;
+        const navRatio = marketCap / ethValue;
+
+        document.getElementById('sbetPrice').innerText = `Stock Price: $${sbetPrice.toFixed(4)}`;
+        document.getElementById('marketCap').innerText = `Market Cap: $${marketCap.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+        document.getElementById('ethNAV').innerText = `NAV per $1 of ETH Held: $${navRatio.toFixed(4)}`;
+      } catch (err) {
+        console.error("Error in fetchBalance:", err);
+        document.getElementById('balance').innerText = 'Error fetching data';
+        document.getElementById('updated').innerText = err.message;
+        document.getElementById('sourceLink').style.display = 'none';
+        document.getElementById('stockData').style.display = 'none';
+      }
+    }
+
+    fetchBalance();
+  </script>
+</body>
+</html>
+
