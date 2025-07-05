@@ -19,6 +19,14 @@
       color: #555;
       font-size: 0.9rem;
     }
+    #sourceLink {
+      margin-top: 0.5rem;
+    }
+    #sourceLink a {
+      color: #2b9348;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
     button {
       margin-top: 2rem;
       padding: 10px 20px;
@@ -34,10 +42,11 @@
   <h1>Sharplink Gaming ETH Treasury</h1>
   <div class="balance" id="balance">Loading...</div>
   <div id="updated">Fetching latest data...</div>
+  <div id="sourceLink"><a id="sourceUrl" href="#" target="_blank">View Sharplink PR</a></div>
   <button onclick="fetchBalance()">Refresh</button>
 
   <script>
-    const apiUrl = 'https://sbet-worker.nealsalmen.workers.dev/api/holdings';
+    const apiUrl = 'data.json';
 
     async function fetchBalance() {
       document.getElementById('updated').innerText = 'Fetching latest data...';
@@ -46,18 +55,22 @@
         const response = await fetch(apiUrl);
         const data = await response.json();
 
-        if (data.holdings) {
-          const ethAmount = data.holdings.toLocaleString();
-          const timestamp = new Date(data.timestamp).toLocaleString();
+        if (data.eth) {
+          const ethAmount = Number(data.eth).toLocaleString();
+          const timestamp = new Date(data.updated_at).toLocaleString();
+          const source = data.source;
 
           document.getElementById('balance').innerText = `${ethAmount} ETH`;
           document.getElementById('updated').innerText = `Last updated: ${timestamp}`;
+          document.getElementById('sourceUrl').href = source;
+          document.getElementById('sourceUrl').textContent = "View Sharplink PR";
         } else {
           throw new Error('Invalid data format');
         }
       } catch (err) {
         document.getElementById('balance').innerText = 'Error fetching data';
         document.getElementById('updated').innerText = err.message;
+        document.getElementById('sourceLink').style.display = 'none';
       }
     }
 
@@ -65,3 +78,4 @@
   </script>
 </body>
 </html>
+
