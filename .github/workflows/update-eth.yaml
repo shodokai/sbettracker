@@ -2,7 +2,7 @@ name: Update ETH Balance
 
 on:
   schedule:
-    - cron: "0 */12 * * *"  # every 12 hours
+    - cron: "0 */12 * * *"  # runs every 12 hours
   workflow_dispatch:        # allows manual trigger
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
       - name: Run scraper
         run: python scraper.py
 
-       - name: Commit and push if changed
+      - name: Commit and push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
