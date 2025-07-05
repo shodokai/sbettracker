@@ -47,7 +47,7 @@
         const data = await response.json();
 
         if (data.holdings) {
-          const ethAmount = (data.holdings / 1e6).toFixed(2);
+          const ethAmount = data.holdings.toLocaleString();
           const timestamp = new Date(data.timestamp).toLocaleString();
 
           document.getElementById('balance').innerText = `${ethAmount} ETH`;
