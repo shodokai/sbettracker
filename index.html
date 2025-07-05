@@ -63,13 +63,19 @@
     const holdingsUrl = 'data.json';
     const ethPriceUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
     const finnhubKey = 'd1klkf9r01qt8fop6p80d1klkf9r01qt8fop6p8g';
-    const sbetShares = 212000000;
 
     async function getSBETPrice() {
       const url = `https://finnhub.io/api/v1/quote?symbol=SBET&token=${finnhubKey}`;
       const res = await fetch(url);
       const data = await res.json();
-      return data.c; // 'c' = current price
+      return data.c;
+    }
+
+    async function getSBETSharesOutstanding() {
+      const url = `https://finnhub.io/api/v1/stock/profile2?symbol=SBET&token=${finnhubKey}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return Math.round(data.shareOutstanding * 1_000_000); // millions → full number
     }
 
     async function fetchBalance() {
@@ -83,14 +89,17 @@
         const ethData = await ethRes.json();
         const ethPrice = ethData.ethereum.usd;
 
-        const sbetPrice = await getSBETPrice();
+        const [sbetPrice, sbetShares] = await Promise.all([
+          getSBETPrice(),
+          getSBETSharesOutstanding()
+        ]);
 
         const ethFormatted = Number(eth).toLocaleString();
         const ethValue = eth * ethPrice;
         const timestamp = new Date(updated_at).toLocaleString();
         const totalFormatted = `$${Number(ethValue).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 
-        // Update ETH display
+        // Update ETH Treasury Display
         document.getElementById('balance').innerText = `${ethFormatted} ETH`;
         document.getElementById('usdValue').innerText = totalFormatted;
         document.getElementById('ethPrice').innerText = `ETH Price: $${ethPrice.toFixed(2)}`;
@@ -98,7 +107,7 @@
         document.getElementById('sourceUrl').href = source;
         document.getElementById('sourceUrl').textContent = "View Sharplink PR";
 
-        // Calculate SBET valuation
+        // SBET Valuation Display
         const marketCap = sbetPrice * sbetShares;
         const navRatio = marketCap / ethValue;
 
