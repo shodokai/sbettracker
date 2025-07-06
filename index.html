@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Sharplink Gaming ETH Tracker</title>
-  <link rel="icon" href="data:,"> <!-- Prevent 404 on favicon -->
-  <meta name="description" content="Track Sharplink Gaming's Ethereum (ETH) treasury in real-time. Live ETH valuation, SBET stock NAV, and market cap comparison.">
+  <title>Sharplink Gaming Ethereum Holdings | SBET NAV Tracker</title>
+  <meta name="description" content="Live tracker for Sharplink Gaming’s ETH holdings and SBET stock NAV. See how Ethereum impacts Sharplink’s valuation. Updated in real-time.">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://www.sbettracker.com/" />
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -53,42 +54,43 @@
     #stockData {
       margin-top: 3rem;
     }
-    #intro {
+    #intro, #seo {
       max-width: 700px;
       margin: 0 auto 2rem auto;
       font-size: 1rem;
-      line-height: 1.5;
+      line-height: 1.6;
+      text-align: left;
     }
   </style>
-</head>
 
   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-2CVJGY4KCD"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2CVJGY4KCD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-2CVJGY4KCD');
+  </script>
+</head>
 
-  gtag('config', 'G-2CVJGY4KCD');
-</script>
-  
-<body>
-  <h1>Sharplink Gaming ETH Treasury Tracker</h1>
+<body itemscope itemtype="https://schema.org/WebPage">
+  <h1 itemprop="headline">Sharplink Gaming ETH Treasury Tracker</h1>
+
   <div id="intro">
-    <strong>Sharplink Gaming Inc. ($SBET)</strong> has adopted a forward-looking digital asset strategy by holding a portion of its treasury in Ethereum (ETH). This tracker provides real-time updates of Sharplink's ETH holdings, their USD value, and how that value compares to the company’s market capitalization. It's designed to help investors better understand how Sharplink’s Ethereum treasury affects the intrinsic value of its stock.
+    <strong itemprop="about">Sharplink Gaming Inc. ($SBET)</strong> has adopted a forward-looking digital asset strategy by holding a portion of its corporate treasury in Ethereum (ETH). This page provides real-time updates of Sharplink’s ETH balance, its USD equivalent, and how that value compares to the company’s current market capitalization.
 
-    <br /><br />
-    The ETH holdings are based on company press releases and public disclosures. Live ETH pricing is fetched via CoinGecko, while SBET pricing is provided by Finnhub. This is not financial advice. Always do your own due diligence.
+    <br><br>
+    Investors use this tool to evaluate Sharplink Gaming’s intrinsic value by analyzing its Ethereum holdings relative to SBET stock price and float. ETH pricing is pulled live from CoinGecko, and SBET share data comes from Finnhub. This tracker is for informational purposes only — always do your own due diligence.
   </div>
 
   <div class="balance" id="balance">Loading...</div>
   <div class="balance" id="usdValue" style="font-size: 1.8rem; color: #000;"></div>
   <div id="ethPrice"></div>
   <div id="updated">Fetching latest data...</div>
-  <div id="sourceLink"><a id="sourceUrl" href="#" target="_blank">View Sharplink PR</a></div>
+  <div id="sourceLink"><a id="sourceUrl" href="#" target="_blank" rel="nofollow noopener">View Sharplink PR</a></div>
 
   <div id="stockData">
-    <h2>$SBET Valuation</h2>
+    <h2>$SBET Valuation and Ethereum Holdings</h2>
     <div id="sbetPrice"></div>
     <div id="sharesOutstanding">
       Shares Outstanding: <span id="sharesDisplay">80,000,000</span>
@@ -99,6 +101,17 @@
   </div>
 
   <button onclick="fetchBalance()">Refresh</button>
+
+  <section id="seo">
+    <h2>Sharplink Gaming’s Ethereum Investment Strategy</h2>
+    <p>Sharplink Gaming has entered the digital asset space by allocating a portion of its treasury into Ethereum, the second-largest cryptocurrency by market capitalization. This unique approach provides exposure to Web3 infrastructure and may position Sharplink as a forward-looking leader in the gaming and betting industry.</p>
+
+    <h2>Why ETH Holdings Matter for SBET Valuation</h2>
+    <p>The ETH on Sharplink's balance sheet represents a tangible asset with daily market value. Investors tracking $SBET use this Ethereum NAV ratio to gauge whether the market is undervaluing or overvaluing the stock relative to its crypto holdings.</p>
+
+    <h2>How We Calculate SBET NAV</h2>
+    <p>We calculate the USD value of ETH holdings in real-time and divide the market cap of SBET by this amount to determine the NAV multiplier. This tool updates as prices move, so you always see the most recent valuation data.</p>
+  </section>
 
   <script>
     const holdingsUrl = 'data.json';
@@ -117,10 +130,7 @@
       document.getElementById('updated').innerText = 'Fetching latest data...';
       try {
         const holdingsRes = await fetch(holdingsUrl);
-        const holdings = await holdingsRes.json();
-        console.log("Holdings fetched:", holdings);
-
-        const { eth, updated_at, source } = holdings;
+        const { eth, updated_at, source } = await holdingsRes.json();
 
         const ethRes = await fetch(ethPriceUrl);
         const ethData = await ethRes.json();
@@ -164,4 +174,5 @@
   </script>
 </body>
 </html>
+
 
