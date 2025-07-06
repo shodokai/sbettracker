@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-
-Sitemap: https://sbettracker.com/sitemap.xml
+Sitemap: https://www.sbettracker.com/sitemap.xml
