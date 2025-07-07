@@ -7,6 +7,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://www.sbettracker.com/" />
+  <link rel="icon" href="data:,"> <!-- Prevent 404 on favicon -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Sharplink Gaming ETH Tracker",
+    "url": "https://www.sbettracker.com/",
+    "description": "Live tracker for Sharplink Gaming’s Ethereum holdings, NAV, and valuation insights.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://www.sbettracker.com/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -62,8 +77,6 @@
       text-align: left;
     }
   </style>
-
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-2CVJGY4KCD"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -72,23 +85,18 @@
     gtag('config', 'G-2CVJGY4KCD');
   </script>
 </head>
-
 <body itemscope itemtype="https://schema.org/WebPage">
   <h1 itemprop="headline">Sharplink Gaming ETH Treasury Tracker</h1>
-
   <div id="intro">
     <strong itemprop="about">Sharplink Gaming Inc. ($SBET)</strong> has adopted a forward-looking digital asset strategy by holding a portion of its corporate treasury in Ethereum (ETH). This page provides real-time updates of Sharplink’s ETH balance, its USD equivalent, and how that value compares to the company’s current market capitalization.
-
     <br><br>
     Investors use this tool to evaluate Sharplink Gaming’s intrinsic value by analyzing its Ethereum holdings relative to SBET stock price and float. ETH pricing is pulled live from CoinGecko, and SBET share data comes from Finnhub. This tracker is for informational purposes only — always do your own due diligence.
   </div>
-
   <div class="balance" id="balance">Loading...</div>
   <div class="balance" id="usdValue" style="font-size: 1.8rem; color: #000;"></div>
   <div id="ethPrice"></div>
   <div id="updated">Fetching latest data...</div>
   <div id="sourceLink"><a id="sourceUrl" href="#" target="_blank" rel="nofollow noopener">View Sharplink PR</a></div>
-
   <div id="stockData">
     <h2>$SBET Valuation and Ethereum Holdings</h2>
     <div id="sbetPrice"></div>
@@ -99,20 +107,15 @@
     <div id="marketCap"></div>
     <div id="ethNAV"></div>
   </div>
-
   <button onclick="fetchBalance()">Refresh</button>
-
   <section id="seo">
     <h2>Sharplink Gaming’s Ethereum Investment Strategy</h2>
     <p>Sharplink Gaming has entered the digital asset space by allocating a portion of its treasury into Ethereum, the second-largest cryptocurrency by market capitalization. This unique approach provides exposure to Web3 infrastructure and may position Sharplink as a forward-looking leader in the gaming and betting industry.</p>
-
     <h2>Why ETH Holdings Matter for SBET Valuation</h2>
     <p>The ETH on Sharplink's balance sheet represents a tangible asset with daily market value. Investors tracking $SBET use this Ethereum NAV ratio to gauge whether the market is undervaluing or overvaluing the stock relative to its crypto holdings.</p>
-
     <h2>How We Calculate SBET NAV</h2>
     <p>We calculate the USD value of ETH holdings in real-time and divide the market cap of SBET by this amount to determine the NAV multiplier. This tool updates as prices move, so you always see the most recent valuation data.</p>
   </section>
-
   <script>
     const holdingsUrl = 'data.json';
     const ethPriceUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
@@ -131,33 +134,25 @@
       try {
         const holdingsRes = await fetch(holdingsUrl);
         const { eth, updated_at, source } = await holdingsRes.json();
-
         const ethRes = await fetch(ethPriceUrl);
         const ethData = await ethRes.json();
         const ethPrice = ethData.ethereum.usd;
-
         const sbetPrice = await getSBETPrice();
-
         let userInput = document.getElementById('sharesInput').value;
         let sbetShares = parseInt(userInput.replace(/,/g, ''), 10);
         if (isNaN(sbetShares) || sbetShares <= 0) {
           sbetShares = defaultShares;
         }
-
         document.getElementById('sharesDisplay').innerText = sbetShares.toLocaleString();
-
         const ethValue = eth * ethPrice;
         const timestamp = new Date(updated_at).toLocaleString();
-
         document.getElementById('balance').innerText = `${Number(eth).toLocaleString()} ETH`;
         document.getElementById('usdValue').innerText = `$${ethValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
         document.getElementById('ethPrice').innerText = `ETH Price: $${ethPrice.toFixed(2)}`;
         document.getElementById('updated').innerText = `Last updated: ${timestamp}`;
         document.getElementById('sourceUrl').href = source;
-
         const marketCap = sbetPrice * sbetShares;
         const navRatio = marketCap / ethValue;
-
         document.getElementById('sbetPrice').innerText = `Stock Price: $${sbetPrice.toFixed(4)}`;
         document.getElementById('marketCap').innerText = `Market Cap: $${marketCap.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
         document.getElementById('ethNAV').innerText = `NAV per $1 of ETH Held: $${navRatio.toFixed(4)}`;
@@ -169,18 +164,12 @@
         document.getElementById('stockData').style.display = 'none';
       }
     }
-
     fetchBalance();
   </script>
-
   <h2>Sharplink Gaming Blog</h2>
-<ul style="list-style:none; padding-left:0;">
-  <li><a href="/blog/eth-treasury-strategy.html">Why Sharplink’s Ethereum Strategy is a Game Changer</a></li>
-  <li><a href="/blog/why-sbet-nav-matters.html">Understanding SBET’s NAV: Ethereum Holdings vs. Market Cap</a></li>
-</ul>
-
-
+  <ul style="list-style:none; padding-left:0;">
+    <li><a href="/blog/eth-treasury-strategy.html">Why Sharplink’s Ethereum Strategy is a Game Changer</a></li>
+    <li><a href="/blog/why-sbet-nav-matters.html">Understanding SBET’s NAV: Ethereum Holdings vs. Market Cap</a></li>
+  </ul>
 </body>
 </html>
-
-
