@@ -3,7 +3,7 @@ import re
 import json
 from datetime import datetime, timezone
 
-URL = "https://investors.sharplink.com/sharplink-gaming-to-ring-nasdaq-closing-bell-on-july-7-2025-celebrating-ethereum-treasury-milestone/"
+URL = "https://investors.sharplink.com/sharplink-grows-eth-holdings-to-205634-earns-322-eth-in-staking-rewards-since-launch-of-treasury-strategy-on-june-2-2025/"
 DATA_FILE = "data.json"
 
 def extract_eth_balance(text, min_value=150000, max_value=500000):
